@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from rest_framework import status, generics 
 from rest_framework.response import Response    
-from .models import Event, Participant  
-from .serializers import EventSerializer, ParticipantSerializer, CustomUserSerializer
+from events.models import Event, Participant  
+from api.serializers import EventSerializer, ParticipantSerializer, CustomUserSerializer
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-# Create your views here.
+
+
 # View to create an event 
 class EventCreateView(generics.CreateAPIView):
     queryset = Event.objects.all()

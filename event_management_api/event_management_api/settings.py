@@ -40,9 +40,13 @@ INSTALLED_APPS = [
 
     'users.apps.UsersConfig',
     'events.apps.EventsConfig',
+
+    'api',
     
     'rest_framework',
     'rest_framework_simplejwt',
+
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -128,6 +132,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# ALL THE CODE BELOW HERE WAS INSERTED FOR THE PURPOSE OF THE DEVELOPMENT OF THIS PROJECT.
+
 AUTH_USER_MODEL = 'users.CustomUser'
 
 
@@ -145,5 +151,5 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=58),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=8),
 }

@@ -1,6 +1,14 @@
 from django.urls import path 
-from .views import *
+from events.views import *
 from rest_framework_simplejwt.views import  TokenObtainPairView
+
+from rest_framework.routers import DefaultRouter
+from .views import *
+
+router = DefaultRouter()
+router.register(r'events', EventViewSet)
+router.register(r'users', UserViewSet)
+
 
 
 urlpatterns = [
@@ -16,4 +24,10 @@ urlpatterns = [
 
     # User registration endpoint 
     path('register/', UserRegisterView.as_view(), name='user-register'),
+
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('token/', CustomAuthToken.as_view(), name='token'),
 ]
+
+urlpatterns += router.urls
