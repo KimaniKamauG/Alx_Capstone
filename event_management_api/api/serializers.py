@@ -1,31 +1,27 @@
 from rest_framework import serializers 
-from events.models import Event, Participant
-#from users.models import CustomUser 
+from events.models import Event
+from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 
 
 from django.contrib.auth.password_validation import validate_password
-from rest_framework.authtoken.models import Token 
+#from rest_framework.authtoken.models import Token 
 from django.contrib.auth import authenticate
 
 User = get_user_model() 
 
-class EventSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Event 
-        fields = '__all__'
 
-class ParticipantSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Participant 
-        fields = [ 'name', 'email']
+class UserSerializer(serializers.ModelSerializer):
+    '''
+    Serializer for the User Model
 
-class CustomUserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField()
+    Handles user registration and profile updates.
+    '''
+    password = serializers.CharField(write_only=True)
     class Meta:
         model = User 
-        fields = ['username', 'email', 'password']
+        fields = ['id', 'username', 'email', 'password']
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate_password(self, value):
@@ -37,9 +33,31 @@ class CustomUserSerializer(serializers.ModelSerializer):
         if 'password' in validated_data:
             user.set_password(validated_data['password'])
             user.save()
-            token = Token.objects.create(user=user)
+            #token = Token.objects.create(user=user)
         return user 
 
+
+class EventSerializer(serializers.ModelSerializer):
+    '''
+    Serializer for the Event Model
+    
+    Handles event creation, updates and detailed view.
+    '''
+    organizer = UserSerializer(read_only=True)
+    attendees = UserSerializer(read_only=True, many=True)
+    is_full = serializers.BooleanField(read_only=True)
+    class Meta:
+        model = Event 
+        fields = '__all__'
+        read_only_fields = ['created_at', 'organizer', 'attendees']
+
+    def validate_date_time(self, value):
+        '''
+        Validate that event date is not in the past.
+        '''
+        if value < timezone.now():
+            raise serializers.ValidationError('Event date cannot be in the past.')
+        return value
 
 
 
