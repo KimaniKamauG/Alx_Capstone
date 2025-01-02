@@ -1,59 +1,80 @@
-# from rest_framework import viewsets, permissions, filters
-# from rest_framework.decorators import action
-# from rest_framework.response import Response
-# from django.utils import timezone
-# from .models import Event
-# from .serializers import EventSerializer
-# from .permissions import IsOrganizerOrReadOnly
+from rest_framework import viewsets, permissions, filters
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.utils import timezone
+from events.models import Event
+from users.models import User
+from .serializers import EventSerializer, UserSerializer 
+from .permissions import IsOrganizerOrReadOnly
 
-# class EventViewSet(viewsets.ModelViewSet):
-#     """
-#     ViewSet for handling Event operations
+class EventViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for handling Event operations
     
-#     Provides CRUD operations and custom actions for event management
-#     """
-#     serializer_class = EventSerializer
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOrganizerOrReadOnly]
-#     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-#     search_fields = ['title', 'location', 'category']
-#     ordering_fields = ['date_time', 'created_at']
+    Provides CRUD operations and custom actions for event management
+    """
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOrganizerOrReadOnly]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title', 'location', 'category']
+    ordering_fields = ['date_time', 'created_at']
 
-#     def get_queryset(self):
-#         """Return upcoming events by default"""
-#         queryset = Event.objects.filter(date_time__gte=timezone.now())
+    def get_queryset(self):
+        """Return upcoming events by default"""
+        queryset = Event.objects.filter(date_time__gte=timezone.now())
         
-#         # Apply date range filter if provided
-#         start_date = self.request.query_params.get('start_date', None)
-#         end_date = self.request.query_params.get('end_date', None)
+        # Apply date range filter if provided
+        start_date = self.request.query_params.get('start_date', None)
+        end_date = self.request.query_params.get('end_date', None)
         
-#         if start_date:
-#             queryset = queryset.filter(date_time__gte=start_date)
-#         if end_date:
-#             queryset = queryset.filter(date_time__lte=end_date)
+        if start_date:
+            queryset = queryset.filter(date_time__gte=start_date)
+        if end_date:
+            queryset = queryset.filter(date_time__lte=end_date)
             
-#         return queryset
+        return queryset
 
-#     def perform_create(self, serializer):
-#         """Set the organizer to the current user when creating an event"""
-#         serializer.save(organizer=self.request.user)
+    def perform_create(self, serializer):
+        """Set the organizer to the current user when creating an event"""
+        serializer.save(organizer=self.request.user)
 
-#     @action(detail=True, methods=['post'])
-#     def register(self, request, pk=None):
-#         """Handle user registration for an event"""
-#         event = self.get_object()
+    @action(detail=True, methods=['post'])
+    def register(self, request, pk=None):
+        """Handle user registration for an event"""
+        event = self.get_object()
         
-#         if event.is_full:
-#             return Response({"error": "Event is at capacity"}, status=400)
+        if event.is_full:
+            return Response({"error": "Event is at capacity"}, status=400)
             
-#         event.attendees.add(request.user)
-#         return Response({"message": "Successfully registered for event"})
+        event.attendees.add(request.user)
+        return Response({"message": "Successfully registered for event"})
 
-#     @action(detail=True, methods=['post'])
-#     def unregister(self, request, pk=None):
-#         """Handle user unregistration from an event"""
-#         event = self.get_object()
-#         event.attendees.remove(request.user)
-#         return Response({"message": "Successfully unregistered from event"})
+    @action(detail=True, methods=['post'])
+    def unregister(self, request, pk=None):
+        """Handle user unregistration from an event"""
+        event = self.get_object()
+        event.attendees.remove(request.user)
+        return Response({"message": "Successfully unregistered from event"})
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for handling User operations
+    
+    Provides CRUD operations for user management
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_permissions(self):
+        """
+        Override to allow user registration without authentication
+        """
+        if self.action == 'create':
+            return [permissions.AllowAny()]
+        return super().get_permissions()
 
 '''ALL THE CODE BELOW HERE WAS BEFORE ADJUSTMENTS TO THE API'''
 

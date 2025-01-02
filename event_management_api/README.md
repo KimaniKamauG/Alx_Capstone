@@ -31,7 +31,7 @@ A Django REST Framework-based API for managing events, registrations, and user i
 1. Clone the repository:
 
 bash
-git clone https://github.com/KimaniKamauG/event_management_api.git
+git clone https://github.com/KimaniKamauG/ALX_Capstone.git
 cd event_management_api
 
 

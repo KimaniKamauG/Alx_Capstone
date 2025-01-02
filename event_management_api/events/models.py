@@ -39,12 +39,16 @@ class Event(models.Model):
         return self.attendees.count() >= self.capacity
 
 
-    
-# class Participant(models.Model):
-#     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-#     name = models.CharField(max_length=255)
-#     email = models.EmailField() 
+class EventRegistration(models.Model):
+    '''Model for managing registration and waitlist
+    '''
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='registrations')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='event_registrations')
+    registered_date = models.DateTimeField(auto_now_add=True)
+    is_waitlisted = models.BooleanField(default=False)
 
-#     def __str__(self):
-#         return self.name 
+    class Meta:
+        unique_together = ['event', 'user']
 
+    def __str__(self):
+        return f'{self.username} registered for {self.event.title}'
