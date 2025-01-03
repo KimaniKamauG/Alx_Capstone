@@ -2,10 +2,11 @@ from rest_framework import viewsets, permissions, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils import timezone
-from events.models import Event
+from events.models import Event, EventRegistration, Category
 from users.models import User
-from .serializers import EventSerializer, UserSerializer 
+from .serializers import EventSerializer, UserSerializer, CategorySerializer
 from .permissions import IsOrganizerOrReadOnly
+from rest_framework import status
 
 class EventViewSet(viewsets.ModelViewSet):
     """
@@ -91,3 +92,12 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             return [permissions.AllowAny()]
         return super().get_permissions()
+
+
+class CateggoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet for handling Category CRUD operations
+    """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticated]

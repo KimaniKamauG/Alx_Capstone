@@ -7,6 +7,16 @@ User = get_user_model()
 
 
 # Create your models here.
+class Category(models.Model):
+    '''Model for event categories'''
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+
+
 class Event(models.Model):
     title = models.CharField(max_length=250)
     description = models.TextField()
@@ -37,10 +47,14 @@ class Event(models.Model):
     def is_full(self):
         ''''Check if event has reached full capacity.'''
         return self.attendees.count() >= self.capacity
+    
+    def available_spots(self):
+        ''''Return the number of available spots for the event.'''
+        return self.capacity - self.attendees.count()
 
 
 class EventRegistration(models.Model):
-    '''Model for managing registration and waitlist
+    '''Model for managing registration and waitlist functionality
     '''
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='registrations')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='event_registrations')
@@ -48,7 +62,8 @@ class EventRegistration(models.Model):
     is_waitlisted = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ['event', 'user']
+        unique_together = ['event', 'user'] # Prevent duplicate registrations
+        ordering = ['registered_date'] # Order registrations by registration date
 
     def __str__(self):
         return f'{self.username} registered for {self.event.title}'

@@ -1,5 +1,5 @@
 from rest_framework import serializers 
-from events.models import Event
+from events.models import Event, Category
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
@@ -41,6 +41,12 @@ class UserSerializer(serializers.ModelSerializer):
 #         fields = ['id', 'username', 'email']
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    '''Serializer for the Event Category Model'''
+    class Meta:
+        model = Category 
+        fields = '__all__'
+
 class EventSerializer(serializers.ModelSerializer):
     '''
     Serializer for the Event Model
@@ -62,5 +68,9 @@ class EventSerializer(serializers.ModelSerializer):
         if value < timezone.now():
             raise serializers.ValidationError('Event date cannot be in the past.')
         return value
-
+    def get_attendee_count(self, obj):
+        '''
+        Get the current number of attendees.
+        '''
+        return obj.attendees.count()
 
