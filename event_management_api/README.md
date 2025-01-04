@@ -104,6 +104,21 @@ python manage.py runserver
 - `POST /api/events/{id}/unregister/` - Unregister from event
 - `POST /api/events/{id}/add_to_calendar/` - Add to Google Calendar
 
+# Search by title
+GET /api/events/?title=conference
+
+# Search by location
+GET /api/events/?location=new york
+
+# Date range filter
+GET /api/events/?date_from=2024-01-01&date_to=2024-12-31
+
+# Show only events with available capacity
+GET /api/events/?has_capacity=true
+
+# Combined filters
+GET /api/events/?title=conference&location=new york&date_from=2024-01-01&has_capacity=true
+
 ### Documentation
 - `/swagger/` - Swagger UI
 - `/redoc/` - ReDoc UI

@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-pz)1r*f&qnoa+4w_-7)dx$c&()_4nkw71-l(df@o8xtq6_c%0&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'localhost:3000', '127.0.0.1:3000' ]
 
 
 # Application definition
@@ -89,6 +89,35 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# USE THIS DATABASE FOR PRODUCTION ENVIRONMENT
+# ''' Postrgres Database '''
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'event_management_api',
+#         'USER': 'postgres',
+#         'PASSWORD': 'postgres',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
+'''MySQL Database'''
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': os.environ.get('DB_NAME'),
+#         'USER': os.environ.get('DB_USER'),
+#         'PASSWORD': os.environ.get('DB_PASSWORD'),
+#         'HOST': os.environ.get('DB_HOST'),
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+#             'ssl': {'ca': '/path/to/ca-cert.pem'}
+#         }
+#     }
+# }
 
 
 # Password validation
@@ -159,3 +188,21 @@ from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=8),
 }
+
+
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+#SECURE_SSL_REDIRECT = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+
+STATIC_URL = 'static/'
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATIC_FILES_DIRS = [
+    BASE_DIR / 'static',
+]

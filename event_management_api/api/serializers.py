@@ -1,15 +1,10 @@
 from rest_framework import serializers 
-from events.models import Event, Category
+from events.models import Event, Category, Comment, EventFeedback
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-
-
-
 from django.contrib.auth.password_validation import validate_password
 
-
 User = get_user_model() 
-
 
 class UserSerializer(serializers.ModelSerializer):
     '''
@@ -33,12 +28,6 @@ class UserSerializer(serializers.ModelSerializer):
             user.set_password(validated_data['password'])
             user.save()
         return user 
-    
-# The one below was before i came up with better ideas.
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User 
-#         fields = ['id', 'username', 'email']
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -73,4 +62,26 @@ class EventSerializer(serializers.ModelSerializer):
         Get the current number of attendees.
         '''
         return obj.attendees.count()
+    
 
+class CommentSerializer(serializers.ModelSerializer):
+    """
+    Serializer for event comments
+    """
+    user_username = serializers.ReadOnlyField(source='user.username')
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'event', 'user', 'user_username', 'content', 'created_at']
+        read_only_fields = ['user']
+
+class EventFeedbackSerializer(serializers.ModelSerializer):
+    """
+    Serializer for event feedback
+    """
+    user_username = serializers.ReadOnlyField(source='user.username')
+
+    class Meta:
+        model = EventFeedback
+        fields = ['id', 'event', 'user', 'user_username', 'rating', 'comment', 'created_at']
+        read_only_fields = ['user']

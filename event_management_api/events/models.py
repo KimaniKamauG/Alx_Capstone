@@ -64,3 +64,45 @@ class EventRegistration(models.Model):
 
     def __str__(self):
         return f'{self.username} registered for {self.event.title}'
+
+
+class Comment(models.Model):
+    """
+    Model for event comments
+    """
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='event_comments')
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on {self.event.title}"
+
+
+class EventFeedback(models.Model):
+    """
+    Model for post-event feedback
+    """
+    RATING_CHOICES = [
+        (1, '1 - Poor'),
+        (2, '2 - Fair'),
+        (3, '3 - Good'),
+        (4, '4 - Very Good'),
+        (5, '5 - Excellent'),
+    ]
+
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='feedback')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='event_feedback')
+    rating = models.IntegerField(choices=RATING_CHOICES)
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ['event', 'user']
+
+    def __str__(self):
+        return f"Feedback for {self.event.title} by {self.user.username}"
