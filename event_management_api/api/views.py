@@ -61,6 +61,8 @@ class EventViewSet(viewsets.ModelViewSet):
 
         # Register the user as an attendee.
         event.attendees.add(request.user)
+        # To reduce the capacity by 1 everytime a user registers for an event.
+        event.capacity -= 1
        
         return Response({"detail": "Successfully registered for the event", "is_waitlisted": is_waitlisted}, status=status.HTTP_201_CREATED)
             
